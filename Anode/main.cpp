@@ -48,7 +48,8 @@ int main(int argc, const char * argv[]) {
 
     // Game State
     
-    SDL_Rect pos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
+    SDL_Rect paddlePos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
+    SDL_Rect ballPos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
 
     // Main event loop
     
@@ -58,36 +59,35 @@ int main(int argc, const char * argv[]) {
         
         if(SDL_PollEvent(&e) != 0)
         {
-            switch(e.type){
-                case SDL_QUIT:
-                    quit = true;
-                    break;
-                case SDL_WINDOWEVENT:
-                    switch( e.window.event ) {
-                        case SDL_WINDOWEVENT_SIZE_CHANGED:
-                            camera.w = e.window.data1;
-                            camera.h = e.window.data2;
-                            SDL_RenderPresent(renderer);
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
+            if(e.type == SDL_QUIT) {
+                quit = true;
+            }
+            
+            if(e.type ==  SDL_WINDOWEVENT){
+                switch(e.window.event) {
+                    case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        camera.w = e.window.data1;
+                        camera.h = e.window.data2;
+                        SDL_RenderPresent(renderer);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
         
         if(keystates[SDL_SCANCODE_LEFT]) {
-            pos.x -= 3;
-            if(pos.x < 0) { pos.x = 0; }
+            paddlePos.x -= 3;
+            if(paddlePos.x < 0) { paddlePos.x = 0; }
         }
         
         if(keystates[SDL_SCANCODE_RIGHT]) {
-            pos.x += 3;
-            if((pos.x + pos.w) > SCREEN_WIDTH) { pos.x = SCREEN_WIDTH - pos.w; }
+            paddlePos.x += 3;
+            if((paddlePos.x + paddlePos.w) > SCREEN_WIDTH) { paddlePos.x = SCREEN_WIDTH - paddlePos.w; }
         }
         
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, paddleTex, &bounds, &pos);
+        SDL_RenderCopy(renderer, paddleTex, &bounds, &paddlePos);
         SDL_RenderPresent(renderer);
 
     } while(!quit);
