@@ -62,40 +62,36 @@ int main(int argc, const char * argv[]) {
                 case SDL_QUIT:
                     quit = true;
                     break;
-                    //Window event occured
                 case SDL_WINDOWEVENT:
-                    switch( e.window.event )
-                {
-                        //Get new dimensions and repaint on window size change
-                    case SDL_WINDOWEVENT_SIZE_CHANGED:
-                        camera.w = e.window.data1;
-                        camera.h = e.window.data2;
-                        SDL_RenderPresent(renderer);
-                        break;
-                    default:
-                        break;
-                }
+                    switch( e.window.event ) {
+                        case SDL_WINDOWEVENT_SIZE_CHANGED:
+                            camera.w = e.window.data1;
+                            camera.h = e.window.data2;
+                            SDL_RenderPresent(renderer);
+                            break;
+                        default:
+                            break;
+                    }
                     break;
             }
         }
         
         if(keystates[SDL_SCANCODE_LEFT]) {
             pos.x -= 3;
+            if(pos.x < 0) { pos.x = 0; }
         }
         
         if(keystates[SDL_SCANCODE_RIGHT]) {
             pos.x += 3;
+            if((pos.x + pos.w) > SCREEN_WIDTH) { pos.x = SCREEN_WIDTH - pos.w; }
         }
         
         SDL_RenderClear(renderer);
-
         SDL_RenderCopy(renderer, paddleTex, &bounds, &pos);
-
         SDL_RenderPresent(renderer);
 
     } while(!quit);
-    
-    
+
     SDL_DestroyWindow(window);
     SDL_Quit();
     
