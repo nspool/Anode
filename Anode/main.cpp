@@ -6,9 +6,6 @@
 //  Copyright © 2017 nspool. All rights reserved.
 //
 
-// #pragma clang diagnostic push
-// #pragma clang diagnostic ignored "-Wdocumentation"
-
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
@@ -42,6 +39,17 @@ int main(int argc, const char * argv[]) {
     SDL_Event e;
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
     
+    
+    // Game sprites
+    
+    SDL_Surface* paddle = IMG_Load("paddle.png");
+    SDL_Texture* paddleTex = SDL_CreateTextureFromSurface(renderer, paddle);
+    SDL_Rect bounds = {0,0,64,8};
+
+    // Game State
+    
+    SDL_Rect pos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
+
     // Main event loop
     
     bool quit = false;
@@ -72,16 +80,17 @@ int main(int argc, const char * argv[]) {
         }
         
         if(keystates[SDL_SCANCODE_LEFT]) {
-            printf("left!\n");
+            pos.x -= 3;
         }
         
         if(keystates[SDL_SCANCODE_RIGHT]) {
-            printf("right!\n");
+            pos.x += 3;
         }
         
         SDL_RenderClear(renderer);
 
-        
+        SDL_RenderCopy(renderer, paddleTex, &bounds, &pos);
+
         SDL_RenderPresent(renderer);
 
     } while(!quit);
