@@ -18,6 +18,8 @@ int main(int argc, const char * argv[]) {
 
     // Initialization
     
+    // TODO: simplify SDL boilerplate
+    
     SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
     
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0 || IMG_Init( IMG_INIT_PNG | IMG_INIT_JPG) < 0) {
@@ -39,28 +41,33 @@ int main(int argc, const char * argv[]) {
     SDL_Event e;
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
     
-    
     // Game sprites
     
     SDL_Surface* paddle = IMG_Load("paddle.png");
     SDL_Texture* paddleTex = SDL_CreateTextureFromSurface(renderer, paddle);
-    SDL_Rect bounds = {0,0,64,8};
+    SDL_Rect paddleBounds = {0,0,64,8};
+    SDL_Rect puckBounds = {0,0,64,8};
 
     // Game State
+
+    bool inProgress = true;
     
     SDL_Rect paddlePos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
-    SDL_Rect ballPos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
+    SDL_Rect puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58,8,8};
+    
+    bool puckInMotion = false;
+    float puckAngle = 0;
+    float puckVelocity = 1;
 
     // Main event loop
-    
-    bool quit = false;
-    
-    do {
-        
+
+    while(inProgress) {
+
         if(SDL_PollEvent(&e) != 0)
         {
             if(e.type == SDL_QUIT) {
-                quit = true;
+                inProgress = false;
+                break;
             }
             
             if(e.type ==  SDL_WINDOWEVENT){
@@ -86,11 +93,21 @@ int main(int argc, const char * argv[]) {
             if((paddlePos.x + paddlePos.w) > SCREEN_WIDTH) { paddlePos.x = SCREEN_WIDTH - paddlePos.w; }
         }
         
+        if(keystates[SDL_SCANCODE_SPACE]) {
+            puckInMotion = true;
+        }
+        
+        if(puckInMotion) {
+            // TODO: calculate new puck position
+            puckPos.y--;
+        }
+        
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, paddleTex, &bounds, &paddlePos);
+        SDL_RenderCopy(renderer, paddleTex, &paddleBounds, &paddlePos);
+        SDL_RenderCopy(renderer, paddleTex, &puckBounds, &puckPos); // TODO: custom texture for puck
         SDL_RenderPresent(renderer);
 
-    } while(!quit);
+    }
 
     SDL_DestroyWindow(window);
     SDL_Quit();

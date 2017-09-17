@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7364C53D1F6D26820033E45F /* paddle.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7364C53C1F6D25750033E45F /* paddle.png */; };
 		73B01B9A1F6D219000C79F56 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73B01B991F6D219000C79F56 /* main.cpp */; };
 		73B01BA31F6D21E600C79F56 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B01BA11F6D21E600C79F56 /* SDL2.framework */; };
 		73B01BA41F6D21E600C79F56 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B01BA21F6D21E600C79F56 /* SDL2_image.framework */; };
@@ -20,14 +19,13 @@
 			dstPath = .;
 			dstSubfolderSpec = 16;
 			files = (
-				7364C53D1F6D26820033E45F /* paddle.png in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7364C53C1F6D25750033E45F /* paddle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = paddle.png; path = ../../../Desktop/paddle.png; sourceTree = "<group>"; };
+		7377B7A91F6E85740050ED74 /* paddle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = paddle.png; sourceTree = "<group>"; };
 		73B01B961F6D219000C79F56 /* Anode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Anode; sourceTree = BUILT_PRODUCTS_DIR; };
 		73B01B991F6D219000C79F56 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		73B01BA11F6D21E600C79F56 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
@@ -67,7 +65,7 @@
 		73B01B981F6D219000C79F56 /* Anode */ = {
 			isa = PBXGroup;
 			children = (
-				7364C53C1F6D25750033E45F /* paddle.png */,
+				7377B7A91F6E85740050ED74 /* paddle.png */,
 				73B01B991F6D219000C79F56 /* main.cpp */,
 			);
 			path = Anode;
