@@ -100,6 +100,9 @@ int main(int argc, const char * argv[]) {
         if(puckInMotion) {
             // TODO: calculate new puck position
             puckPos.y--;
+        } else {
+            // Keep it attached to the paddle
+            puckPos.x = paddlePos.x + 28;
         }
         
         SDL_RenderClear(renderer);
