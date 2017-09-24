@@ -56,7 +56,7 @@ int main(int argc, const char * argv[]) {
     SDL_Rect puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58,8,8};
     
     bool puckInMotion = false;
-    float puckAngle = 0;
+    float puckAngle = M_PI;
     float puckVelocity = 1;
 
     // Main event loop
@@ -93,13 +93,19 @@ int main(int argc, const char * argv[]) {
             if((paddlePos.x + paddlePos.w) > SCREEN_WIDTH) { paddlePos.x = SCREEN_WIDTH - paddlePos.w; }
         }
         
-        if(keystates[SDL_SCANCODE_SPACE]) {
+        if(!puckInMotion && keystates[SDL_SCANCODE_SPACE]) {
             puckInMotion = true;
+            float jitter = (((float)arc4random_uniform(500)) - 250) / 100;
+            printf("jitter %f\n", jitter);
+            puckAngle += jitter;
         }
         
         if(puckInMotion) {
             // TODO: calculate new puck position
-            puckPos.y--;
+            float nxtY = cos(puckAngle);
+            float nxtX = sin(0);
+            puckPos.y += nxtY;
+            puckPos.x += nxtX;
         } else {
             // Keep it attached to the paddle
             puckPos.x = paddlePos.x + 28;
