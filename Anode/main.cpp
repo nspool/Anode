@@ -56,8 +56,13 @@ int main(int argc, const char * argv[]) {
     SDL_Rect puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58,8,8};
     
     bool puckInMotion = false;
-    float puckAngle = M_PI;
+    
+    float puckSign = -1;
+    float puckAngle = M_PI_2;
     float puckVelocity = 1;
+    
+    float paddleVelocity = 5;
+    bool paddleInMotion = false;
 
     // Main event loop
 
@@ -83,29 +88,51 @@ int main(int argc, const char * argv[]) {
             }
         }
         
-        if(keystates[SDL_SCANCODE_LEFT]) {
-            paddlePos.x -= 3;
-            if(paddlePos.x < 0) { paddlePos.x = 0; }
-        }
-        
-        if(keystates[SDL_SCANCODE_RIGHT]) {
-            paddlePos.x += 3;
-            if((paddlePos.x + paddlePos.w) > SCREEN_WIDTH) { paddlePos.x = SCREEN_WIDTH - paddlePos.w; }
+        if(paddleInMotion && !keystates[SDL_SCANCODE_LEFT] && !keystates[SDL_SCANCODE_RIGHT]) {
+            paddleInMotion = false;
+            // Set puck back to default values
+            if(!puckInMotion) {
+                puckAngle = M_PI_2;
+                puckVelocity = 1;
+            }
         }
         
         if(!puckInMotion && keystates[SDL_SCANCODE_SPACE]) {
             puckInMotion = true;
-            float jitter = (((float)arc4random_uniform(500)) - 250) / 100;
-            printf("jitter %f\n", jitter);
-            puckAngle += jitter;
         }
         
+        if(keystates[SDL_SCANCODE_LEFT]) {
+            paddlePos.x -= paddleVelocity;
+            if(paddlePos.x < 0) {
+                paddlePos.x = 0;
+            } else {
+                if(!puckInMotion){
+                    paddleInMotion = true;
+                    puckAngle = 0.1;
+                    puckVelocity = 5;
+                }
+            }
+        }
+        
+        if(keystates[SDL_SCANCODE_RIGHT]) {
+            paddlePos.x += paddleVelocity;
+            if((paddlePos.x + paddlePos.w) > SCREEN_WIDTH) {
+                paddlePos.x = SCREEN_WIDTH - paddlePos.w;
+            } else {
+                if(!puckInMotion) {
+                    paddleInMotion = true;
+                    puckAngle = M_PI - 0.1;
+                    puckVelocity = 5;
+                }
+            }
+        }
+
         if(puckInMotion) {
-            // TODO: calculate new puck position
-            float nxtY = cos(puckAngle);
-            float nxtX = sin(0);
-            puckPos.y += nxtY;
-            puckPos.x += nxtX;
+            // 0 hard left π/2 UP, π hard right
+            puckPos.y += puckSign * (puckVelocity * sin(puckAngle));
+            puckPos.x += puckSign * (puckVelocity * cos(puckAngle));
+            
+            // TODO: Collision logic
         } else {
             // Keep it attached to the paddle
             puckPos.x = paddlePos.x + 28;
