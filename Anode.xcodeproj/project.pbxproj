@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		730F96CA1F80C123001B2C3C /* paddle.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7377B7A91F6E85740050ED74 /* paddle.png */; };
 		73B01B9A1F6D219000C79F56 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73B01B991F6D219000C79F56 /* main.cpp */; };
 		73B01BA31F6D21E600C79F56 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B01BA11F6D21E600C79F56 /* SDL2.framework */; };
 		73B01BA41F6D21E600C79F56 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B01BA21F6D21E600C79F56 /* SDL2_image.framework */; };
@@ -19,6 +20,7 @@
 			dstPath = .;
 			dstSubfolderSpec = 16;
 			files = (
+				730F96CA1F80C123001B2C3C /* paddle.png in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
