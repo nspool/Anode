@@ -59,7 +59,7 @@ int main(int argc, const char * argv[]) {
     
     float puckSign = -1;
     float puckAngle = M_PI_2;
-    float puckVelocity = 1;
+    float puckVelocity = 10;
     
     float paddleVelocity = 5;
     bool paddleInMotion = false;
@@ -93,7 +93,7 @@ int main(int argc, const char * argv[]) {
             // Set puck back to default values
             if(!puckInMotion) {
                 puckAngle = M_PI_2;
-                puckVelocity = 1;
+                puckVelocity = 7;
             }
         }
         
@@ -109,7 +109,7 @@ int main(int argc, const char * argv[]) {
                 if(!puckInMotion){
                     paddleInMotion = true;
                     puckAngle = 0.1;
-                    puckVelocity = 5;
+                    puckVelocity = 10;
                 }
             }
         }
@@ -122,17 +122,45 @@ int main(int argc, const char * argv[]) {
                 if(!puckInMotion) {
                     paddleInMotion = true;
                     puckAngle = M_PI - 0.1;
-                    puckVelocity = 5;
+                    puckVelocity = 10;
                 }
             }
         }
 
         if(puckInMotion) {
+            
+            SDL_Point oldPos = {puckPos.x, puckPos.y};
+            
             // 0 hard left π/2 UP, π hard right
             puckPos.y += puckSign * (puckVelocity * sin(puckAngle));
             puckPos.x += puckSign * (puckVelocity * cos(puckAngle));
+
+            bool hitLeft = puckPos.x < 0;
+            bool hitTop = puckPos.y < 0;
+            bool hitRight =  SCREEN_WIDTH < puckPos.x + puckPos.w;
+            bool hitBottom =  SCREEN_HEIGHT < puckPos.y + puckPos.h;
+            // Test of collided with screen
+            if(hitTop || hitLeft || hitRight || hitBottom) {
+                // FIXME: clamp, don't revert
+                puckPos.x = oldPos.x;
+                puckPos.y = oldPos.y;
+                
+                if(hitTop) {
+                    puckSign *= -1;
+                    puckAngle = M_PI - puckAngle;
+                }
+                if(hitLeft || hitRight) {
+                    puckAngle = M_PI - puckAngle;
+                }
+                
+                if(hitBottom) {
+                    // TODO
+                    puckSign *= -1;
+                    puckAngle = M_PI - puckAngle;
+                }
+                
+            }
             
-            // TODO: Collision logic
         } else {
             // Keep it attached to the paddle
             puckPos.x = paddlePos.x + 28;
