@@ -139,26 +139,36 @@ int main(int argc, const char * argv[]) {
             bool hitTop = puckPos.y < 0;
             bool hitRight =  SCREEN_WIDTH < puckPos.x + puckPos.w;
             bool hitBottom =  SCREEN_HEIGHT < puckPos.y + puckPos.h;
+            bool hitPaddle = SDL_HasIntersection(&puckPos, &paddlePos);
+            
             // Test of collided with screen
-            if(hitTop || hitLeft || hitRight || hitBottom) {
+            if(hitTop || hitLeft || hitRight || hitBottom || hitPaddle) {
+                
                 // FIXME: clamp, don't revert
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
                 
                 if(hitTop) {
                     puckSign *= -1;
-                    puckAngle = M_PI - puckAngle;
+                    puckAngle =  M_PI - puckAngle;
+                    std::cout << "Hit top\n";
+                    if(puckAngle == 0 || puckAngle == M_PI) {
+                        std::cout << "Stuck!";
+                    }
                 }
                 if(hitLeft || hitRight) {
                     puckAngle = M_PI - puckAngle;
                 }
                 
-                if(hitBottom) {
+                if(hitBottom || hitPaddle) {
                     // TODO
                     puckSign *= -1;
                     puckAngle = M_PI - puckAngle;
                 }
                 
+                if(hitPaddle) {
+                    std::cout << "Hit paddle\n";
+                }
             }
             
         } else {
