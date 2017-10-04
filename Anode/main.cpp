@@ -16,6 +16,8 @@ constexpr unsigned int SCREEN_HEIGHT = 480;
 
 int main(int argc, const char * argv[]) {
 
+    std::cout << "Welcome to the game : n )\n";
+    
     // Initialization
     
     // TODO: simplify SDL boilerplate
@@ -66,6 +68,8 @@ int main(int argc, const char * argv[]) {
 
     // Main event loop
 
+    std::cout << "Starting event loop ... \n";
+    
     while(inProgress) {
 
         if(SDL_PollEvent(&e) != 0)
@@ -87,8 +91,12 @@ int main(int argc, const char * argv[]) {
                 }
             }
         }
+                
+        bool scanLeft = keystates[SDL_SCANCODE_LEFT];
+        bool scanRight = keystates[SDL_SCANCODE_RIGHT];
+        bool scanSpace = keystates[SDL_SCANCODE_SPACE];
         
-        if(paddleInMotion && !keystates[SDL_SCANCODE_LEFT] && !keystates[SDL_SCANCODE_RIGHT]) {
+        if(paddleInMotion && !scanLeft && !scanRight) {
             paddleInMotion = false;
             // Set puck back to default values
             if(!puckInMotion) {
@@ -97,11 +105,11 @@ int main(int argc, const char * argv[]) {
             }
         }
         
-        if(!puckInMotion && keystates[SDL_SCANCODE_SPACE]) {
+        if(!puckInMotion && scanSpace) {
             puckInMotion = true;
         }
         
-        if(keystates[SDL_SCANCODE_LEFT]) {
+        if(scanLeft) {
             paddlePos.x -= paddleVelocity;
             if(paddlePos.x < 0) {
                 paddlePos.x = 0;
@@ -114,7 +122,7 @@ int main(int argc, const char * argv[]) {
             }
         }
         
-        if(keystates[SDL_SCANCODE_RIGHT]) {
+        if(scanRight) {
             paddlePos.x += paddleVelocity;
             if((paddlePos.x + paddlePos.w) > SCREEN_WIDTH) {
                 paddlePos.x = SCREEN_WIDTH - paddlePos.w;
