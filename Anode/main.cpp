@@ -154,6 +154,7 @@ int main(int argc, const char * argv[]) {
             bool hitBottom =  SCREEN_HEIGHT < puckPos.y + puckPos.h;
             bool hitPaddle = SDL_HasIntersection(&puckPos, &paddlePos);
             
+
             // Test of collided with screen
             if(hitTop || hitLeft || hitRight || hitBottom || hitPaddle) {
                 
@@ -164,11 +165,12 @@ int main(int argc, const char * argv[]) {
                 if(hitTop) {
                     puckSign *= -1;
                     puckAngle =  M_PI - puckAngle;
-                    std::cout << "Hit top\n";
+                    std::cout << "Hit Top Wall\n";
                 }
                 
                 if(hitLeft || hitRight) {
                     puckAngle = M_PI - puckAngle;
+                    std::cout << "Hit Side Wall\n";
                 }
                 
                 if(hitBottom || hitPaddle) {
@@ -178,9 +180,20 @@ int main(int argc, const char * argv[]) {
                 }
                 
                 if(hitPaddle) {
-                    std::cout << "Hit paddle\n";
+                    std::cout << "Hit Paddle\n";
                     // Where on the paddle did the puck hit?
                     puckAngle = M_PI * ( puckPos.x + (puckPos.w / 2) - paddlePos.x) / paddlePos.w;;
+                }
+            } else {
+                // FIX THIS:
+                for(int i=0; i<32; i++) {
+                    brickPos.x = 32*i;
+                    if(!board[i] && SDL_HasIntersection(&puckPos, &brickPos)) {
+                        std::cout << "Hit Brick\n";
+
+                        // TODO: rebound after bounce
+                        board[i] = true;
+                    }
                 }
             }
             
