@@ -26,6 +26,8 @@ int main(int argc, const char * argv[]) {
     for(int i=0; i<8; i++) {
         for(int j=0; j<32; j++) {
             board[i][j] = false;
+            // FIME: JUST FOR TESTING!!
+            if(i<7) { board[i][j] = true; }
         }
     }
     
@@ -196,7 +198,9 @@ int main(int argc, const char * argv[]) {
                         brickPos.x = 32*j;
                         if(!board[i][j] && SDL_HasIntersection(&puckPos, &brickPos)) {
                             std::cout << "Hit Brick\n";
-                            // TODO: rebound after bounce
+                            // TODO: this assumes it always hits the bottom of the brick
+                            puckSign *= -1;
+                            puckAngle =  M_PI - puckAngle;
                             board[i][j] = true;
                             break;
                         }
