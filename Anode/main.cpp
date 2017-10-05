@@ -20,6 +20,10 @@ int main(int argc, const char * argv[]) {
     
     // Initialization
     
+    // Keeping the state of the board in an array.. for now
+    
+    bool board[32];
+    
     // TODO: simplify SDL boilerplate
     
     SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -49,6 +53,8 @@ int main(int argc, const char * argv[]) {
     SDL_Texture* paddleTex = SDL_CreateTextureFromSurface(renderer, paddle);
     SDL_Rect paddleBounds = {0,0,64,8};
     SDL_Rect puckBounds = {0,0,64,8};
+    
+    SDL_Rect brickPos = {0,100,32,16};
 
     // Game State
 
@@ -173,12 +179,8 @@ int main(int argc, const char * argv[]) {
                 
                 if(hitPaddle) {
                     std::cout << "Hit paddle\n";
-
                     // Where on the paddle did the puck hit?
-                    
-                    float zz = M_PI * ( puckPos.x + (puckPos.w / 2) - paddlePos.x) / paddlePos.w;
-                    puckAngle = zz;
-                    std::cout << "zz: " << zz << "\n";
+                    puckAngle = M_PI * ( puckPos.x + (puckPos.w / 2) - paddlePos.x) / paddlePos.w;;
                 }
             }
             
@@ -190,6 +192,14 @@ int main(int argc, const char * argv[]) {
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, paddleTex, &paddleBounds, &paddlePos);
         SDL_RenderCopy(renderer, paddleTex, &puckBounds, &puckPos); // TODO: custom texture for puck
+
+        for(int i=0; i<32; i++) {
+            brickPos.x = 32*i;
+            if(!board[i]) {
+                SDL_RenderCopy(renderer, paddleTex, &puckBounds, &brickPos); // TODO: custom texture for bricks
+            }
+        }
+
         SDL_RenderPresent(renderer);
 
     }
