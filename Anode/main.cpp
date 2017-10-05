@@ -62,8 +62,7 @@ int main(int argc, const char * argv[]) {
     float puckSign = -1;
     float puckAngle = M_PI_2;
     float puckVelocity = 10;
-    
-    float paddleVelocity = 5;
+    float paddleVelocity = 10;
     bool paddleInMotion = false;
 
     // Main event loop
@@ -140,11 +139,11 @@ int main(int argc, const char * argv[]) {
             SDL_Point oldPos = {puckPos.x, puckPos.y};
             
             // 0 hard left π/2 UP, π hard right
-            puckPos.y += puckSign * (puckVelocity * sin(puckAngle));
-            puckPos.x += puckSign * (puckVelocity * cos(puckAngle));
+            puckPos.y += puckSign * ceil(puckVelocity * sin(puckAngle));
+            puckPos.x += puckSign * ceil(puckVelocity * cos(puckAngle));
 
-            bool hitLeft = puckPos.x < 0;
-            bool hitTop = puckPos.y < 0;
+            bool hitLeft = puckPos.x <= 0;
+            bool hitTop = puckPos.y <= 0;
             bool hitRight =  SCREEN_WIDTH < puckPos.x + puckPos.w;
             bool hitBottom =  SCREEN_HEIGHT < puckPos.y + puckPos.h;
             bool hitPaddle = SDL_HasIntersection(&puckPos, &paddlePos);
@@ -160,10 +159,8 @@ int main(int argc, const char * argv[]) {
                     puckSign *= -1;
                     puckAngle =  M_PI - puckAngle;
                     std::cout << "Hit top\n";
-                    if(puckAngle == 0 || puckAngle == M_PI) {
-                        std::cout << "Stuck!";
-                    }
                 }
+                
                 if(hitLeft || hitRight) {
                     puckAngle = M_PI - puckAngle;
                 }
@@ -176,6 +173,12 @@ int main(int argc, const char * argv[]) {
                 
                 if(hitPaddle) {
                     std::cout << "Hit paddle\n";
+
+                    // Where on the paddle did the puck hit?
+                    
+                    float zz = M_PI * ( puckPos.x + (puckPos.w / 2) - paddlePos.x) / paddlePos.w;
+                    puckAngle = zz;
+                    std::cout << "zz: " << zz << "\n";
                 }
             }
             
