@@ -22,7 +22,12 @@ int main(int argc, const char * argv[]) {
     
     // Keeping the state of the board in an array.. for now
     
-    bool board[32];
+    bool board[8][32];
+    for(int i=0; i<8; i++) {
+        for(int j=0; j<32; j++) {
+            board[i][j] = false;
+        }
+    }
     
     // TODO: simplify SDL boilerplate
     
@@ -54,7 +59,7 @@ int main(int argc, const char * argv[]) {
     SDL_Rect paddleBounds = {0,0,64,8};
     SDL_Rect puckBounds = {0,0,64,8};
     
-    SDL_Rect brickPos = {0,100,32,16};
+    SDL_Rect brickPos = {0,128,32,16};
 
     // Game State
 
@@ -153,7 +158,6 @@ int main(int argc, const char * argv[]) {
             bool hitRight =  SCREEN_WIDTH < puckPos.x + puckPos.w;
             bool hitBottom =  SCREEN_HEIGHT < puckPos.y + puckPos.h;
             bool hitPaddle = SDL_HasIntersection(&puckPos, &paddlePos);
-            
 
             // Test of collided with screen
             if(hitTop || hitLeft || hitRight || hitBottom || hitPaddle) {
@@ -186,13 +190,16 @@ int main(int argc, const char * argv[]) {
                 }
             } else {
                 // FIX THIS:
-                for(int i=0; i<32; i++) {
-                    brickPos.x = 32*i;
-                    if(!board[i] && SDL_HasIntersection(&puckPos, &brickPos)) {
-                        std::cout << "Hit Brick\n";
-
-                        // TODO: rebound after bounce
-                        board[i] = true;
+                for(int i=0; i<8; i++) {
+                    for(int j=0; j<32; j++) {
+                        brickPos.y = 16*i;
+                        brickPos.x = 32*j;
+                        if(!board[i][j] && SDL_HasIntersection(&puckPos, &brickPos)) {
+                            std::cout << "Hit Brick\n";
+                            // TODO: rebound after bounce
+                            board[i][j] = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -203,13 +210,16 @@ int main(int argc, const char * argv[]) {
         }
         
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, paddleTex, &paddleBounds, &paddlePos);
         SDL_RenderCopy(renderer, paddleTex, &puckBounds, &puckPos); // TODO: custom texture for puck
-
-        for(int i=0; i<32; i++) {
-            brickPos.x = 32*i;
-            if(!board[i]) {
-                SDL_RenderCopy(renderer, paddleTex, &puckBounds, &brickPos); // TODO: custom texture for bricks
+        SDL_RenderCopy(renderer, paddleTex, &paddleBounds, &paddlePos);
+        
+        for(int i=0; i<8; i++) {
+            for(int j=0; j<32; j++) {
+                brickPos.y = 16*i;
+                brickPos.x = 32*j;
+                if(!board[i][j]) {
+                    SDL_RenderCopy(renderer, paddleTex, &puckBounds, &brickPos); // TODO: custom texture for bricks
+                }
             }
         }
 
