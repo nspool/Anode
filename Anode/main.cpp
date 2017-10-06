@@ -74,7 +74,7 @@ int main(int argc, const char * argv[]) {
     
     float puckSign = -1;
     float puckAngle = M_PI_2;
-    float puckVelocity = 10;
+    float puckVelocity = 5;
     float paddleVelocity = 10;
     bool paddleInMotion = false;
 
@@ -129,7 +129,7 @@ int main(int argc, const char * argv[]) {
                 if(!puckInMotion){
                     paddleInMotion = true;
                     puckAngle = 0.1;
-                    puckVelocity = 10;
+                    puckVelocity = 5;
                 }
             }
         }
@@ -142,7 +142,7 @@ int main(int argc, const char * argv[]) {
                 if(!puckInMotion) {
                     paddleInMotion = true;
                     puckAngle = M_PI - 0.1;
-                    puckVelocity = 10;
+                    puckVelocity = 5;
                 }
             }
         }
@@ -197,9 +197,11 @@ int main(int argc, const char * argv[]) {
                         brickPos.y = 16*i;
                         brickPos.x = 32*j;
                         if(!board[i][j] && SDL_HasIntersection(&puckPos, &brickPos)) {
-                            std::cout << "Hit Brick\n";
-                            // TODO: this assumes it always hits the bottom of the brick
-                            puckSign *= -1;
+                            SDL_Rect result;
+                            SDL_IntersectRect(&puckPos, &brickPos, &result);
+                            if(result.h < result.w){
+                                puckSign *= -1;
+                            }
                             puckAngle =  M_PI - puckAngle;
                             board[i][j] = true;
                             break;
