@@ -26,8 +26,6 @@ int main(int argc, const char * argv[]) {
     for(int i=0; i<8; i++) {
         for(int j=0; j<32; j++) {
             board[i][j] = false;
-            // FIME: JUST FOR TESTING!!
-            if(i<7) { board[i][j] = true; }
         }
     }
     
@@ -61,7 +59,8 @@ int main(int argc, const char * argv[]) {
     SDL_Rect paddleBounds = {0,0,64,8};
     SDL_Rect puckBounds = {0,0,64,8};
     
-    SDL_Rect brickPos = {0,128,32,16};
+    SDL_Rect brickPos = {0,0,32,16};
+    int brickOffset = 128;
 
     // Game State
 
@@ -168,6 +167,10 @@ int main(int argc, const char * argv[]) {
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
                 
+                float jitter = (((float)arc4random_uniform(500)) - 250) / 1000;
+                printf("jitter %f\n", jitter);
+                puckAngle += jitter;
+                
                 if(hitTop) {
                     puckSign *= -1;
                     puckAngle =  M_PI - puckAngle;
@@ -194,7 +197,7 @@ int main(int argc, const char * argv[]) {
                 // FIX THIS:
                 for(int i=0; i<8; i++) {
                     for(int j=0; j<32; j++) {
-                        brickPos.y = 16*i;
+                        brickPos.y = 16*i + brickOffset;
                         brickPos.x = 32*j;
                         if(!board[i][j] && SDL_HasIntersection(&puckPos, &brickPos)) {
                             SDL_Rect result;
@@ -221,7 +224,7 @@ int main(int argc, const char * argv[]) {
         
         for(int i=0; i<8; i++) {
             for(int j=0; j<32; j++) {
-                brickPos.y = 16*i;
+                brickPos.y = 16*i + brickOffset;
                 brickPos.x = 32*j;
                 if(!board[i][j]) {
                     SDL_RenderCopy(renderer, paddleTex, &puckBounds, &brickPos); // TODO: custom texture for bricks
