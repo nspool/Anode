@@ -167,7 +167,7 @@ int main(int argc, const char * argv[]) {
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
                 
-                float jitter = (((float)arc4random_uniform(500)) - 250) / 1000;
+                float jitter = (((float)arc4random_uniform(1000) - 500) / 10000) * M_PI;
                 printf("jitter %f\n", jitter);
                 puckAngle += jitter;
                 
