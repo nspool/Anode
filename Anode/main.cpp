@@ -193,6 +193,20 @@ int main(int argc, const char * argv[]) {
                     // Where on the paddle did the puck hit?
                     puckAngle = M_PI * ( puckPos.x + (puckPos.w / 2) - paddlePos.x) / paddlePos.w;;
                 }
+                
+                if(hitBottom) {
+                    
+                     paddlePos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
+                     puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58,8,8};
+                    
+                     puckInMotion = false;
+                    
+                     puckSign = -1;
+                     puckAngle = M_PI_2;
+                     puckVelocity = 5;
+                     paddleVelocity = 10;
+                     paddleInMotion = false;
+                }
             } else {
                 // FIX THIS:
                 for(int i=0; i<8; i++) {
