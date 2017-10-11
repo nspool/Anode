@@ -1,3 +1,3 @@
 # Anode
 
-The start of a very basic Arkanoid clone. Written in C++ with SDL2.
+An incomplete Arkanoid clone. Written in C++ with SDL2.
