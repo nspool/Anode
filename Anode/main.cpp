@@ -29,6 +29,8 @@ int main(int argc, const char * argv[]) {
         }
     }
     
+    int score = 0;
+    
     // TODO: simplify SDL boilerplate
     
     SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -83,6 +85,9 @@ int main(int argc, const char * argv[]) {
     
     while(inProgress) {
 
+        SDL_Delay(1);
+
+        // TODO: Use an SDL_WaitEvent when waiting for space to start game
         if(SDL_PollEvent(&e) != 0)
         {
             if(e.type == SDL_QUIT) {
@@ -221,6 +226,8 @@ int main(int argc, const char * argv[]) {
                             }
                             puckAngle =  M_PI - puckAngle;
                             board[i][j] = true;
+                            score++;
+                            std::cout << "Score: " << score << "\n";
                             break;
                         }
                     }
@@ -247,7 +254,6 @@ int main(int argc, const char * argv[]) {
         }
 
         SDL_RenderPresent(renderer);
-
     }
 
     SDL_DestroyWindow(window);
