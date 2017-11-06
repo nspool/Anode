@@ -70,8 +70,8 @@ int main(int argc, const char * argv[]) {
 
     bool inProgress = true;
     
-    SDL_Rect paddlePos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
-    SDL_Rect puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58,8,8};
+    SDL_Rect paddlePos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50, paddleBounds.w, paddleBounds.h};
+    SDL_Rect puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58, puckBounds.w, puckBounds.h};
     
     bool puckInMotion = false;
     
@@ -210,8 +210,8 @@ int main(int argc, const char * argv[]) {
                     
                      puckSign = -1;
                      puckAngle = M_PI_2;
-                     puckVelocity = 5;
-                     paddleVelocity = 10;
+                     puckVelocity = 10;
+                     paddleVelocity = 20;
                      paddleInMotion = false;
                 }
             } else {
@@ -238,7 +238,7 @@ int main(int argc, const char * argv[]) {
             
         } else {
             // Keep it attached to the paddle
-            puckPos.x = paddlePos.x + 28;
+            puckPos.x = paddlePos.x + paddlePos.w / 2 - puckBounds.w / 2;
         }
         
         SDL_RenderClear(renderer);
