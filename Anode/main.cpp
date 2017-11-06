@@ -6,7 +6,6 @@
 //  Copyright © 2017 nspool. All rights reserved.
 //
 
-#include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2_image/SDL_image.h>
 #include <SDL2/SDL_timer.h>
@@ -16,7 +15,7 @@ constexpr unsigned int SCREEN_HEIGHT = 480;
 
 int main(int argc, const char * argv[]) {
 
-    std::cout << "Welcome to the game : n )\n";
+    SDL_Log("Welcome to the game : n )");
     
     // Initialization
     
@@ -36,7 +35,7 @@ int main(int argc, const char * argv[]) {
     SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
     
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0 || IMG_Init( IMG_INIT_PNG | IMG_INIT_JPG) < 0) {
-        std::cerr << "Failed to Initialize SDL!" << std::endl;
+        SDL_LogError(0, "Failed to Initialize SDL!");
         return 1;
     }
     
@@ -44,7 +43,7 @@ int main(int argc, const char * argv[]) {
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     
     if(window == 0 || renderer == 0) {
-        std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
+        SDL_LogError(0, "%s", SDL_GetError());
         return 1;
     }
     
@@ -59,7 +58,10 @@ int main(int argc, const char * argv[]) {
     SDL_Surface* paddle = IMG_Load("paddle.png");
     SDL_Texture* paddleTex = SDL_CreateTextureFromSurface(renderer, paddle);
     SDL_Rect paddleBounds = {0,0,64,8};
-    SDL_Rect puckBounds = {0,0,64,8};
+    
+    SDL_Surface* puck = IMG_Load("puck.png");
+    SDL_Texture* puckTex = SDL_CreateTextureFromSurface(renderer, puck);
+    SDL_Rect puckBounds = {0,0,8,8};
     
     SDL_Rect brickPos = {0,0,32,16};
     int brickOffset = 128;
@@ -81,7 +83,7 @@ int main(int argc, const char * argv[]) {
 
     // Main event loop
 
-    std::cout << "Starting event loop ... \n";
+    SDL_Log("Starting event loop ...");
     
     while(inProgress) {
 
@@ -173,30 +175,30 @@ int main(int argc, const char * argv[]) {
                 puckPos.y = oldPos.y;
                 
                 float jitter = (((float)arc4random_uniform(1000) - 500) / 10000) * M_PI;
-                printf("jitter %f\n", jitter);
+                SDL_Log("jitter %f\n", jitter);
                 puckAngle += jitter;
                 
                 if(hitTop) {
                     puckSign *= -1;
                     puckAngle =  M_PI - puckAngle;
-                    std::cout << "Hit Top Wall\n";
+                    SDL_Log("Hit Top Wall");
                 }
                 
                 if(hitLeft || hitRight) {
                     puckAngle = M_PI - puckAngle;
-                    std::cout << "Hit Side Wall\n";
+                    SDL_Log("Hit Side Wall");
                 }
                 
                 if(hitBottom || hitPaddle) {
-                    // TODO
+                    // TODO: Enter fail state
                     puckSign *= -1;
                     puckAngle = M_PI - puckAngle;
                 }
                 
                 if(hitPaddle) {
-                    std::cout << "Hit Paddle\n";
                     // Where on the paddle did the puck hit?
-                    puckAngle = M_PI * ( puckPos.x + (puckPos.w / 2) - paddlePos.x) / paddlePos.w;;
+                    puckAngle = M_PI * ( puckPos.x + (puckPos.w / 2) - paddlePos.x) / paddlePos.w;
+                    SDL_Log("Hit Paddle");
                 }
                 
                 if(hitBottom) {
@@ -227,7 +229,7 @@ int main(int argc, const char * argv[]) {
                             puckAngle =  M_PI - puckAngle;
                             board[i][j] = true;
                             score++;
-                            std::cout << "Score: " << score << "\n";
+                            SDL_Log("Score: %d", score);
                             break;
                         }
                     }
@@ -240,9 +242,10 @@ int main(int argc, const char * argv[]) {
         }
         
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, paddleTex, &puckBounds, &puckPos); // TODO: custom texture for puck
+        SDL_RenderCopy(renderer, puckTex, &puckBounds, &puckPos); // TODO: custom texture for puck
         SDL_RenderCopy(renderer, paddleTex, &paddleBounds, &paddlePos);
         
+        // FIX THIS:
         for(int i=0; i<8; i++) {
             for(int j=0; j<32; j++) {
                 brickPos.y = 16*i + brickOffset;
