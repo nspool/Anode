@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		730F96CA1F80C123001B2C3C /* paddle.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7377B7A91F6E85740050ED74 /* paddle.png */; };
+		738D7BB51FB1C150003EC2DF /* brick.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 738D7BB41FB1C14A003EC2DF /* brick.png */; };
 		73B01B9A1F6D219000C79F56 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 73B01B991F6D219000C79F56 /* main.cpp */; };
 		73B01BA31F6D21E600C79F56 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B01BA11F6D21E600C79F56 /* SDL2.framework */; };
 		73B01BA41F6D21E600C79F56 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B01BA21F6D21E600C79F56 /* SDL2_image.framework */; };
@@ -21,6 +22,7 @@
 			dstPath = .;
 			dstSubfolderSpec = 16;
 			files = (
+				738D7BB51FB1C150003EC2DF /* brick.png in CopyFiles */,
 				73C62BEB1FB059F500001474 /* puck.png in CopyFiles */,
 				730F96CA1F80C123001B2C3C /* paddle.png in CopyFiles */,
 			);
@@ -30,6 +32,7 @@
 
 /* Begin PBXFileReference section */
 		7377B7A91F6E85740050ED74 /* paddle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = paddle.png; sourceTree = "<group>"; };
+		738D7BB41FB1C14A003EC2DF /* brick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = brick.png; sourceTree = "<group>"; };
 		73B01B961F6D219000C79F56 /* Anode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Anode; sourceTree = BUILT_PRODUCTS_DIR; };
 		73B01B991F6D219000C79F56 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		73B01BA11F6D21E600C79F56 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
@@ -70,6 +73,7 @@
 		73B01B981F6D219000C79F56 /* Anode */ = {
 			isa = PBXGroup;
 			children = (
+				738D7BB41FB1C14A003EC2DF /* brick.png */,
 				73C62BEA1FB0597200001474 /* puck.png */,
 				7377B7A91F6E85740050ED74 /* paddle.png */,
 				73B01B991F6D219000C79F56 /* main.cpp */,

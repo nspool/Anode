@@ -63,7 +63,12 @@ int main(int argc, const char * argv[]) {
     SDL_Texture* puckTex = SDL_CreateTextureFromSurface(renderer, puck);
     SDL_Rect puckBounds = {0,0,8,8};
     
+    
+    SDL_Surface* brick = IMG_Load("brick.png");
+    SDL_Texture* brickTex = SDL_CreateTextureFromSurface(renderer, brick);
+    SDL_Rect brickBounds = {0,0,32,16};
     SDL_Rect brickPos = {0,0,32,16};
+    
     int brickOffset = 128;
 
     // Game State
@@ -251,7 +256,7 @@ int main(int argc, const char * argv[]) {
                 brickPos.y = 16*i + brickOffset;
                 brickPos.x = 32*j;
                 if(!board[i][j]) {
-                    SDL_RenderCopy(renderer, paddleTex, &puckBounds, &brickPos); // TODO: custom texture for bricks
+                    SDL_RenderCopy(renderer, brickTex, &brickBounds, &brickPos); // TODO: custom texture for bricks
                 }
             }
         }
