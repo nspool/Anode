@@ -48,7 +48,7 @@ int main(int argc, const char * argv[]) {
     }
     
     SDL_SetWindowTitle(window, "Anode");
-    SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
+    SDL_SetRenderDrawColor(renderer, 0x00, 0xff, 0xff, 0xff);
     
     SDL_Event e;
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
@@ -82,7 +82,7 @@ int main(int argc, const char * argv[]) {
     
     float puckSign = -1;
     float puckAngle = M_PI_2;
-    float puckVelocity = 5;
+    float puckVelocity = 10;
     float paddleVelocity = 10;
     bool paddleInMotion = false;
 
@@ -92,7 +92,7 @@ int main(int argc, const char * argv[]) {
     
     while(inProgress) {
 
-        SDL_Delay(1);
+        SDL_Delay(20);
 
         // TODO: Use an SDL_WaitEvent when waiting for space to start game
         if(SDL_PollEvent(&e) != 0)
@@ -124,7 +124,6 @@ int main(int argc, const char * argv[]) {
             // Set puck back to default values
             if(!puckInMotion) {
                 puckAngle = M_PI_2;
-                puckVelocity = 7;
             }
         }
         
@@ -140,7 +139,6 @@ int main(int argc, const char * argv[]) {
                 if(!puckInMotion){
                     paddleInMotion = true;
                     puckAngle = 0.1;
-                    puckVelocity = 5;
                 }
             }
         }
@@ -153,7 +151,6 @@ int main(int argc, const char * argv[]) {
                 if(!puckInMotion) {
                     paddleInMotion = true;
                     puckAngle = M_PI - 0.1;
-                    puckVelocity = 5;
                 }
             }
         }
@@ -179,9 +176,8 @@ int main(int argc, const char * argv[]) {
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
                 
-                float jitter = (((float)arc4random_uniform(1000) - 500) / 10000) * M_PI;
+                float jitter = ((float)arc4random_uniform(1000) / 10000) * M_PI;
                 SDL_Log("jitter %f\n", jitter);
-                puckAngle += jitter;
                 
                 if(hitTop) {
                     puckSign *= -1;
@@ -215,10 +211,13 @@ int main(int argc, const char * argv[]) {
                     
                      puckSign = -1;
                      puckAngle = M_PI_2;
-                     puckVelocity = 10;
                      paddleVelocity = 20;
                      paddleInMotion = false;
                 }
+
+                // Apply jitter to exaggerate the angle
+                puckAngle += (puckSign  * jitter);
+
             } else {
                 // FIX THIS:
                 for(int i=0; i<8; i++) {
