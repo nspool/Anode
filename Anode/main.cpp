@@ -10,7 +10,7 @@
 #include <SDL2_image/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 
-constexpr unsigned int SCREEN_WIDTH = 640;
+constexpr unsigned int SCREEN_WIDTH = 320;
 constexpr unsigned int SCREEN_HEIGHT = 480;
 
 int main(int argc, const char * argv[]) {
@@ -92,7 +92,7 @@ int main(int argc, const char * argv[]) {
     
     while(inProgress) {
 
-        SDL_Delay(20);
+        SDL_Delay(1);
 
         // TODO: Use an SDL_WaitEvent when waiting for space to start game
         if(SDL_PollEvent(&e) != 0)
@@ -220,24 +220,24 @@ int main(int argc, const char * argv[]) {
 
             } else {
                 // FIX THIS:
-                for(int i=0; i<8; i++) {
-                    for(int j=0; j<32; j++) {
-                        brickPos.y = 16*i + brickOffset;
-                        brickPos.x = 32*j;
-                        if(!board[i][j] && SDL_HasIntersection(&puckPos, &brickPos)) {
-                            SDL_Rect result;
-                            SDL_IntersectRect(&puckPos, &brickPos, &result);
-                            if(result.h < result.w){
-                                puckSign *= -1;
-                            }
-                            puckAngle =  M_PI - puckAngle;
-                            board[i][j] = true;
-                            score++;
-                            SDL_Log("Score: %d", score);
-                            break;
-                        }
-                    }
-                }
+//                for(int i=0; i<8; i++) {
+//                    for(int j=0; j<32; j++) {
+//                        brickPos.y = 16*i + brickOffset;
+//                        brickPos.x = 32*j;
+//                        if(!board[i][j] && SDL_HasIntersection(&puckPos, &brickPos)) {
+//                            SDL_Rect result;
+//                            SDL_IntersectRect(&puckPos, &brickPos, &result);
+//                            if(result.h < result.w){
+//                                puckSign *= -1;
+//                            }
+//                            puckAngle =  M_PI - puckAngle;
+//                            board[i][j] = true;
+//                            score++;
+//                            SDL_Log("Score: %d", score);
+//                            break;
+//                        }
+//                    }
+//                }
             }
             
         } else {
