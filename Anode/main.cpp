@@ -238,6 +238,24 @@ int main(int argc, const char * argv[]) {
 //                        }
 //                    }
 //                }
+                
+                /* Something like:
+                 if within area of puck
+                    which board coords for current puck position?
+                    if board[i][j] == false collision else next
+                 */
+                
+                if(puckPos.y < (brickOffset + (16 * 8)) && puckPos.y > brickOffset) // 8 brick rows
+                {
+                    int i = (puckPos.y - brickOffset) / 16;
+                    int j = (puckPos.x) / 32;
+                    SDL_Log("puck at %d %d", i, j);
+                    if(board[i][j] == false) {
+                        SDL_Log("Collision!");
+                        board[i][j] = true;
+                        puckSign *= -1; // Collision
+                    }
+                }
             }
             
         } else {
