@@ -167,7 +167,7 @@ int main(int argc, const char * argv[]) {
             bool hitTop = puckPos.y <= 0;
             bool hitRight =  SCREEN_WIDTH < puckPos.x + puckPos.w;
             bool hitBottom =  SCREEN_HEIGHT < puckPos.y + puckPos.h;
-            bool hitPaddle = SDL_HasIntersection(&puckPos, &paddlePos);
+            bool hitPaddle = (puckPos.y > paddlePos.y && SDL_HasIntersection(&puckPos, &paddlePos));
 
             // Test of collided with screen
             if(hitTop || hitLeft || hitRight || hitBottom || hitPaddle) {
@@ -219,25 +219,6 @@ int main(int argc, const char * argv[]) {
                 puckAngle += (puckSign  * jitter);
 
             } else {
-                // FIX THIS:
-//                for(int i=0; i<8; i++) {
-//                    for(int j=0; j<32; j++) {
-//                        brickPos.y = 16*i + brickOffset;
-//                        brickPos.x = 32*j;
-//                        if(!board[i][j] && SDL_HasIntersection(&puckPos, &brickPos)) {
-//                            SDL_Rect result;
-//                            SDL_IntersectRect(&puckPos, &brickPos, &result);
-//                            if(result.h < result.w){
-//                                puckSign *= -1;
-//                            }
-//                            puckAngle =  M_PI - puckAngle;
-//                            board[i][j] = true;
-//                            score++;
-//                            SDL_Log("Score: %d", score);
-//                            break;
-//                        }
-//                    }
-//                }
                 
                 /* Something like:
                  if within area of puck
@@ -254,6 +235,7 @@ int main(int argc, const char * argv[]) {
                         SDL_Log("Collision!");
                         board[i][j] = true;
                         puckSign *= -1; // Collision
+                        score++;
                     }
                 }
             }
