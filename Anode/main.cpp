@@ -220,8 +220,7 @@ int main(int argc, const char * argv[]) {
 
             } else {
                 
-                /* Something like:
-                 if within area of puck
+                /* if within area of puck
                     which board coords for current puck position?
                     if board[i][j] == false collision else next
                  */
@@ -243,9 +242,11 @@ int main(int argc, const char * argv[]) {
         } else {
             // Keep it attached to the paddle
             puckPos.x = paddlePos.x + paddlePos.w / 2 - puckBounds.w / 2;
+            SDL_Delay(10);
         }
         
         SDL_RenderClear(renderer);
+        
         SDL_RenderCopy(renderer, puckTex, &puckBounds, &puckPos); // TODO: custom texture for puck
         SDL_RenderCopy(renderer, paddleTex, &paddleBounds, &paddlePos);
         
@@ -255,11 +256,11 @@ int main(int argc, const char * argv[]) {
                 brickPos.y = 16*i + brickOffset;
                 brickPos.x = 32*j;
                 if(!board[i][j]) {
-                    SDL_RenderCopy(renderer, brickTex, &brickBounds, &brickPos); // TODO: custom texture for bricks
+                    SDL_RenderCopy(renderer, brickTex, &brickBounds, &brickPos);
                 }
             }
         }
-
+        
         SDL_RenderPresent(renderer);
     }
 
