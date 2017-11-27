@@ -62,8 +62,7 @@ int main(int argc, const char * argv[]) {
     SDL_Surface* puck = IMG_Load("puck.png");
     SDL_Texture* puckTex = SDL_CreateTextureFromSurface(renderer, puck);
     SDL_Rect puckBounds = {0,0,8,8};
-    
-    
+        
     SDL_Surface* brick = IMG_Load("brick.png");
     SDL_Texture* brickTex = SDL_CreateTextureFromSurface(renderer, brick);
     SDL_Rect brickBounds = {0,0,32,16};
