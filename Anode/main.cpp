@@ -6,14 +6,16 @@
 //  Copyright © 2017 nspool. All rights reserved.
 //
 
-#include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
-#include <SDL2/SDL_timer.h>
+#include <cstdlib>
+
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_timer.h>
 
 constexpr unsigned int SCREEN_WIDTH = 320;
 constexpr unsigned int SCREEN_HEIGHT = 480;
 
-int main(int argc, const char * argv[]) {
+int main(int argc, char * argv[]) {
 
     SDL_Log("Welcome to the game : n )");
     
@@ -80,7 +82,7 @@ int main(int argc, const char * argv[]) {
     bool puckInMotion = false;
     
     float puckSign = -1;
-    float puckAngle = M_PI_2;
+    float puckAngle = M_PI / 2;
     float puckVelocity = 10;
     float paddleVelocity = 10;
     bool paddleInMotion = false;
@@ -122,7 +124,7 @@ int main(int argc, const char * argv[]) {
             paddleInMotion = false;
             // Set puck back to default values
             if(!puckInMotion) {
-                puckAngle = M_PI_2;
+                puckAngle = M_PI / 2;
             }
         }
         
@@ -175,7 +177,7 @@ int main(int argc, const char * argv[]) {
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
                 
-                float jitter = ((float)arc4random_uniform(1000) / 10000) * M_PI;
+				float jitter = 0.01; // FIXME: Jitter value (rand() > 0.5) ? -1 : 1;
                 SDL_Log("jitter %f\n", jitter);
                 
                 if(hitTop) {
@@ -209,7 +211,7 @@ int main(int argc, const char * argv[]) {
                      puckInMotion = false;
                     
                      puckSign = -1;
-                     puckAngle = M_PI_2;
+                     puckAngle = M_PI / 2;
                      paddleVelocity = 20;
                      paddleInMotion = false;
                 }
