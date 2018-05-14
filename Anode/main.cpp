@@ -16,8 +16,6 @@ constexpr unsigned int SCREEN_WIDTH = 320;
 constexpr unsigned int SCREEN_HEIGHT = 480;
 
 int main(int argc, char * argv[]) {
-
-    SDL_Log("Welcome to the game : n )");
     
     // Initialization
     
@@ -177,8 +175,7 @@ int main(int argc, char * argv[]) {
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
                 
-				float jitter = 0.01; // FIXME: Jitter value (rand() > 0.5) ? -1 : 1;
-                SDL_Log("jitter %f\n", jitter);
+				float jitter = (rand() > RAND_MAX / 2) ? -0.1 : 0.1;
                 
                 if(hitTop) {
                     puckSign *= -1;
@@ -261,7 +258,7 @@ int main(int argc, char * argv[]) {
                 }
             }
         }
-        
+
         SDL_RenderPresent(renderer);
     }
 
