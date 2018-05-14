@@ -6,14 +6,12 @@
 //  Copyright © 2017 nspool. All rights reserved.
 //
 
-#include <cstdlib>
-
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_timer.h>
 
-constexpr unsigned int SCREEN_WIDTH = 320;
-constexpr unsigned int SCREEN_HEIGHT = 480;
+const unsigned SCREEN_WIDTH = 320;
+const unsigned SCREEN_HEIGHT = 480;
 
 int main(int argc, char * argv[]) {
     
@@ -175,7 +173,7 @@ int main(int argc, char * argv[]) {
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
                 
-				float jitter = (rand() > RAND_MAX / 2) ? -0.1 : 0.1;
+				float jitter = (rand() > (RAND_MAX / 2)) ? -0.2 : 0.2;
                 
                 if(hitTop) {
                     puckSign *= -1;
