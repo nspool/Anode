@@ -6,6 +6,8 @@
 //  Copyright © 2017 nspool. All rights reserved.
 //
 
+#include <stdlib.h>
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_timer.h>
@@ -13,15 +15,18 @@
 const unsigned SCREEN_WIDTH = 320;
 const unsigned SCREEN_HEIGHT = 480;
 
+const int WALL_HEIGHT = 1;
+const int WALL_WIDTH = 32;
+
 int main(int argc, char * argv[]) {
     
     // Initialization
     
     // Keeping the state of the board in an array.. for now
     
-    bool board[8][32];
-    for(int i=0; i<8; i++) {
-        for(int j=0; j<32; j++) {
+    bool board[WALL_HEIGHT][WALL_WIDTH];
+    for(int i=0; i<WALL_HEIGHT; i++) {
+        for(int j=0; j<WALL_WIDTH; j++) {
             board[i][j] = false;
         }
     }
@@ -76,12 +81,13 @@ int main(int argc, char * argv[]) {
     SDL_Rect puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58, puckBounds.w, puckBounds.h};
     
     bool puckInMotion = false;
-    
-    float puckSign = -1;
-    float puckAngle = M_PI / 2;
-    float puckVelocity = 10;
-    float paddleVelocity = 10;
-    bool paddleInMotion = false;
+	bool paddleInMotion = false;
+
+	int puckSign = -1;
+    int paddleVelocity = 10;
+	int puckVelocity = 2;
+
+	double puckAngle = M_PI / 2;
 
     // Main event loop
 
@@ -157,8 +163,8 @@ int main(int argc, char * argv[]) {
             SDL_Point oldPos = {puckPos.x, puckPos.y};
             
             // 0 hard left π/2 UP, π hard right
-            puckPos.y += puckSign * ceil(puckVelocity * sin(puckAngle));
-            puckPos.x += puckSign * ceil(puckVelocity * cos(puckAngle));
+            puckPos.y += puckSign * (int)ceil(puckVelocity * sin(puckAngle));
+            puckPos.x += puckSign * (int)ceil(puckVelocity * cos(puckAngle));
 
             bool hitLeft = puckPos.x <= 0;
             bool hitTop = puckPos.y <= 0;
@@ -172,9 +178,9 @@ int main(int argc, char * argv[]) {
                 // FIXME: clamp, don't revert
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
-                
-				float jitter = (rand() > (RAND_MAX / 2)) ? -0.2 : 0.2;
-                
+
+				double jitter = 0; // (rand() / (double)RAND_MAX) / 4.0;
+
                 if(hitTop) {
                     puckSign *= -1;
                     puckAngle =  M_PI - puckAngle;
@@ -190,6 +196,7 @@ int main(int argc, char * argv[]) {
                     // TODO: Enter fail state
                     puckSign *= -1;
                     puckAngle = M_PI - puckAngle;
+					SDL_Log("Hit Bottom");
                 }
                 
                 if(hitPaddle) {
@@ -221,13 +228,16 @@ int main(int argc, char * argv[]) {
                     if board[i][j] == false collision else next
                  */
                 
-                if(puckPos.y < (brickOffset + (16 * 8)) && puckPos.y > brickOffset) // 8 brick rows
+                if(puckPos.y < (brickOffset + (16 * WALL_HEIGHT)) && puckPos.y > brickOffset) // 8 brick rows
                 {
                     int i = (puckPos.y - brickOffset) / 16;
                     int j = (puckPos.x) / 32;
-                    SDL_Log("puck at %d %d", i, j);
+                    // SDL_Log("puck at %d %d", i, j);
                     if(board[i][j] == false) {
                         SDL_Log("Collision!");
+
+						// FIXME: On what side ??
+
                         board[i][j] = true;
                         puckSign *= -1; // Collision
                         score++;
@@ -247,8 +257,8 @@ int main(int argc, char * argv[]) {
         SDL_RenderCopy(renderer, paddleTex, &paddleBounds, &paddlePos);
         
         // FIX THIS:
-        for(int i=0; i<8; i++) {
-            for(int j=0; j<32; j++) {
+        for(int i=0; i<WALL_HEIGHT; i++) {
+            for(int j=0; j<WALL_WIDTH; j++) {
                 brickPos.y = 16*i + brickOffset;
                 brickPos.x = 32*j;
                 if(!board[i][j]) {
