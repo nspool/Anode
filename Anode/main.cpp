@@ -15,24 +15,33 @@
 const unsigned SCREEN_WIDTH = 320;
 const unsigned SCREEN_HEIGHT = 480;
 
-const int WALL_HEIGHT = 1;
 const int WALL_WIDTH = 32;
+const int WALL_HEIGHT = 1;
+const int WALL_OFFSET = 128;
+
+const int BRICK_WIDTH = 32;
+const int BRICK_HEIGHT = 16;
+
+const int PUCK_SIZE = 8;
+
+const int PADDLE_WIDTH = 64;
+const int PADDLE_HEIGHT = 8;
+const int PADDLE_OFFSET = 50;
 
 int main(int argc, char * argv[]) {
+
+	/* -------------- */
+    /* INITIALISATION */
+    /* -------------- */
     
-    // Initialization
-    
-    // Keeping the state of the board in an array.. for now
-    
+	// State of the board
     bool board[WALL_HEIGHT][WALL_WIDTH];
     for(int i=0; i<WALL_HEIGHT; i++) {
         for(int j=0; j<WALL_WIDTH; j++) {
             board[i][j] = false;
         }
     }
-    
-    int score = 0;
-    
+        
     // TODO: simplify SDL boilerplate
     
     SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -60,25 +69,25 @@ int main(int argc, char * argv[]) {
     
     SDL_Surface* paddle = IMG_Load("paddle.png");
     SDL_Texture* paddleTex = SDL_CreateTextureFromSurface(renderer, paddle);
-    SDL_Rect paddleBounds = {0,0,64,8};
+    SDL_Rect paddleBounds = {0,0,PADDLE_WIDTH,PADDLE_HEIGHT};
     
     SDL_Surface* puck = IMG_Load("puck.png");
     SDL_Texture* puckTex = SDL_CreateTextureFromSurface(renderer, puck);
-    SDL_Rect puckBounds = {0,0,8,8};
+    SDL_Rect puckBounds = {0,0,PUCK_SIZE,PUCK_SIZE };
         
     SDL_Surface* brick = IMG_Load("brick.png");
     SDL_Texture* brickTex = SDL_CreateTextureFromSurface(renderer, brick);
-    SDL_Rect brickBounds = {0,0,32,16};
-    SDL_Rect brickPos = {0,0,32,16};
+    SDL_Rect brickBounds = {0,0,BRICK_WIDTH,BRICK_HEIGHT};
+    SDL_Rect brickPos = {0,0,BRICK_WIDTH,BRICK_HEIGHT };
     
-    int brickOffset = 128;
-
     // Game State
+
+	int score = 0;
 
     bool inProgress = true;
     
-    SDL_Rect paddlePos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50, paddleBounds.w, paddleBounds.h};
-    SDL_Rect puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58, puckBounds.w, puckBounds.h};
+    SDL_Rect paddlePos = {SCREEN_WIDTH / 2 - PADDLE_WIDTH / 2, SCREEN_HEIGHT - PADDLE_OFFSET, paddleBounds.w, paddleBounds.h};
+    SDL_Rect puckPos = {SCREEN_WIDTH / 2 - PADDLE_WIDTH / 4, SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT), puckBounds.w, puckBounds.h};
     
     bool puckInMotion = false;
 	bool paddleInMotion = false;
@@ -160,6 +169,7 @@ int main(int argc, char * argv[]) {
 
         if(puckInMotion) {
             
+			SDL_Log("Puck Sign %d", puckSign);
             SDL_Point oldPos = {puckPos.x, puckPos.y};
             
             // 0 hard left π/2 UP, π hard right
@@ -228,9 +238,9 @@ int main(int argc, char * argv[]) {
                     if board[i][j] == false collision else next
                  */
                 
-                if(puckPos.y < (brickOffset + (16 * WALL_HEIGHT)) && puckPos.y > brickOffset) // 8 brick rows
+                if(puckPos.y < (WALL_OFFSET + (16 * WALL_HEIGHT)) && puckPos.y > WALL_OFFSET) // 8 brick rows
                 {
-                    int i = (puckPos.y - brickOffset) / 16;
+                    int i = (puckPos.y - WALL_OFFSET) / 16;
                     int j = (puckPos.x) / 32;
                     // SDL_Log("puck at %d %d", i, j);
                     if(board[i][j] == false) {
@@ -259,7 +269,7 @@ int main(int argc, char * argv[]) {
         // FIX THIS:
         for(int i=0; i<WALL_HEIGHT; i++) {
             for(int j=0; j<WALL_WIDTH; j++) {
-                brickPos.y = 16*i + brickOffset;
+                brickPos.y = 16*i + WALL_OFFSET;
                 brickPos.x = 32*j;
                 if(!board[i][j]) {
                     SDL_RenderCopy(renderer, brickTex, &brickBounds, &brickPos);
