@@ -22,11 +22,12 @@ const int WALL_OFFSET = 128;
 const int BRICK_WIDTH = 32;
 const int BRICK_HEIGHT = 16;
 
-const int PUCK_SIZE = 8;
-
 const int PADDLE_WIDTH = 64;
 const int PADDLE_HEIGHT = 8;
 const int PADDLE_OFFSET = 50;
+
+const int PUCK_SIZE = 8;
+const double PUCK_INITIAL_ANGLE = -1; // -2
 
 int main(int argc, char * argv[]) {
 
@@ -92,13 +93,14 @@ int main(int argc, char * argv[]) {
     bool puckInMotion = false;
 	bool paddleInMotion = false;
 
-	int puckSign = -1;
     int paddleVelocity = 10;
 	int puckVelocity = 2;
 
-	double puckAngle = M_PI / 2;
+	double puckAngle = PUCK_INITIAL_ANGLE;
 
-    // Main event loop
+	/* ----------------*/
+	/* MAIN EVENT LOOP */
+	/* ----------------*/
 
     SDL_Log("Starting event loop ...");
     
@@ -135,7 +137,7 @@ int main(int argc, char * argv[]) {
             paddleInMotion = false;
             // Set puck back to default values
             if(!puckInMotion) {
-                puckAngle = M_PI / 2;
+                puckAngle = PUCK_INITIAL_ANGLE;
             }
         }
         
@@ -148,10 +150,10 @@ int main(int argc, char * argv[]) {
             if(paddlePos.x < 0) {
                 paddlePos.x = 0;
             } else {
-                if(!puckInMotion){
-                    paddleInMotion = true;
-                    puckAngle = 0.1;
-                }
+                //if(!puckInMotion){
+                //    paddleInMotion = true;
+                //    puckAngle = 0.1;
+                //}
             }
         }
         
@@ -160,53 +162,58 @@ int main(int argc, char * argv[]) {
             if((paddlePos.x + paddlePos.w) > SCREEN_WIDTH) {
                 paddlePos.x = SCREEN_WIDTH - paddlePos.w;
             } else {
-                if(!puckInMotion) {
-                    paddleInMotion = true;
-                    puckAngle = M_PI - 0.1;
-                }
+                //if(!puckInMotion) {
+                //    paddleInMotion = true;
+                //    puckAngle = M_PI - 0.1;
+                //}
             }
         }
 
         if(puckInMotion) {
             
-			SDL_Log("Puck Sign %d", puckSign);
             SDL_Point oldPos = {puckPos.x, puckPos.y};
             
-            // 0 hard left π/2 UP, π hard right
-            puckPos.y += puckSign * (int)ceil(puckVelocity * sin(puckAngle));
-            puckPos.x += puckSign * (int)ceil(puckVelocity * cos(puckAngle));
+			SDL_Log("%f", puckAngle);
 
-            bool hitLeft = puckPos.x <= 0;
-            bool hitTop = puckPos.y <= 0;
-            bool hitRight =  SCREEN_WIDTH < puckPos.x + puckPos.w;
-            bool hitBottom =  SCREEN_HEIGHT < puckPos.y + puckPos.h;
-            //bool hitPaddle = (puckPos.y > paddlePos.y && SDL_HasIntersection(&puckPos, &paddlePos));
+			puckPos.y += (int)ceil(puckVelocity * sin(puckAngle));
+            puckPos.x += (int)ceil(puckVelocity * cos(puckAngle));
+
+            bool hitLeft = puckPos.x < 1;
+            bool hitTop = puckPos.y < 1;
+            bool hitRight =  SCREEN_WIDTH < (puckPos.x + puckPos.w);
+            bool hitBottom =  SCREEN_HEIGHT < (puckPos.y + puckPos.h);
 			bool hitPaddle = puckPos.y > SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT);
 
-            // Test of collided with screen
+            // Collision Detection
             if(hitTop || hitLeft || hitRight || hitBottom || hitPaddle) {
                 
                 // FIXME: clamp, don't revert
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
 
-				double jitter = 0; // (rand() / (double)RAND_MAX) / 4.0;
-
                 if(hitTop) {
-                    puckSign *= -1;
-                    puckAngle =  M_PI - puckAngle;
+                    puckAngle += M_PI / 2;
                     SDL_Log("Hit Top Wall");
                 }
                 
-                if(hitLeft || hitRight) {
-                    puckAngle = M_PI - puckAngle;
-                    SDL_Log("Hit Side Wall");
-                }
+				if (hitLeft) {
+					SDL_Log("Hit Left Wall");
+					double sign = puckAngle < 0 ? -1 : 1;
+					puckAngle += sign * (M_PI / 2);
+				}
+
+                if(hitRight) {
+					SDL_Log("Hit Right Wall");
+					SDL_Log("%f", puckAngle);
+					// puckAngle = -((M_PI / 2) - puckAngle);
+					double sign = puckAngle < 0 ? -1 : 1;
+					puckAngle += sign * (M_PI / 2);
+					SDL_Log("%f", puckAngle);
+				}
                 
                 if(hitBottom || hitPaddle) {
                     // TODO: Enter fail state
-                    puckSign *= -1;
-                    puckAngle = M_PI - puckAngle;
+                    puckAngle += M_PI / 2;
 					SDL_Log("Hit Bottom");
                 }
                 
@@ -221,16 +228,16 @@ int main(int argc, char * argv[]) {
                      paddlePos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
                      puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58,8,8};
                     
-                     puckInMotion = false;
-                    
-                     puckSign = -1;
-                     puckAngle = M_PI / 2;
+                     puckInMotion = false;                    
+
+                     puckAngle += M_PI / 2;
                      paddleVelocity = 20;
                      paddleInMotion = false;
                 }
 
                 // Apply jitter to exaggerate the angle
-                puckAngle += (puckSign  * jitter);
+				// double jitter = 0; // (rand() / (double)RAND_MAX) / 4.0;
+                // puckAngle += (puckSign  * jitter);
 
             } else {
                 
@@ -250,7 +257,6 @@ int main(int argc, char * argv[]) {
 						// FIXME: On what side ??
 
                         board[i][j] = true;
-                        puckSign *= -1; // Collision
                         score++;
                     }
                 }
