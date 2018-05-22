@@ -180,7 +180,8 @@ int main(int argc, char * argv[]) {
             bool hitTop = puckPos.y <= 0;
             bool hitRight =  SCREEN_WIDTH < puckPos.x + puckPos.w;
             bool hitBottom =  SCREEN_HEIGHT < puckPos.y + puckPos.h;
-            bool hitPaddle = (puckPos.y > paddlePos.y && SDL_HasIntersection(&puckPos, &paddlePos));
+            //bool hitPaddle = (puckPos.y > paddlePos.y && SDL_HasIntersection(&puckPos, &paddlePos));
+			bool hitPaddle = puckPos.y > SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT);
 
             // Test of collided with screen
             if(hitTop || hitLeft || hitRight || hitBottom || hitPaddle) {
