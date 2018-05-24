@@ -15,8 +15,8 @@
 const unsigned SCREEN_WIDTH = 320;
 const unsigned SCREEN_HEIGHT = 480;
 
-const int WALL_WIDTH = 32;
-const int WALL_HEIGHT = 1;
+const int WALL_BREADTH = 32;
+const int WALL_DEPTH = 8;
 const int WALL_OFFSET = 128;
 
 const int BRICK_WIDTH = 32;
@@ -27,7 +27,7 @@ const int PADDLE_HEIGHT = 8;
 const int PADDLE_OFFSET = 50;
 
 const int PUCK_SIZE = 8;
-const double PUCK_INITIAL_ANGLE = -1; // -2
+const double PUCK_INITIAL_ANGLE = -3*M_PI/4; // << -M_PI  ^-2^^  0 >>
 
 int main(int argc, char * argv[]) {
 
@@ -36,9 +36,9 @@ int main(int argc, char * argv[]) {
     /* -------------- */
     
 	// State of the board
-    bool board[WALL_HEIGHT][WALL_WIDTH];
-    for(int i=0; i<WALL_HEIGHT; i++) {
-        for(int j=0; j<WALL_WIDTH; j++) {
+    bool board[WALL_DEPTH][WALL_BREADTH];
+    for(int i=0; i<WALL_DEPTH; i++) {
+        for(int j=0; j<WALL_BREADTH; j++) {
             board[i][j] = false;
         }
     }
@@ -173,16 +173,19 @@ int main(int argc, char * argv[]) {
             
             SDL_Point oldPos = {puckPos.x, puckPos.y};
             
-			SDL_Log("%f", puckAngle);
+			puckPos.y += (int)(puckVelocity * sin(puckAngle));
+            puckPos.x += (int)(puckVelocity * cos(puckAngle));
 
-			puckPos.y += (int)ceil(puckVelocity * sin(puckAngle));
-            puckPos.x += (int)ceil(puckVelocity * cos(puckAngle));
+			if (puckPos.y < 0) { puckPos.y = 0; }
+			if (puckPos.x < 0) { puckPos.x = 0; }
+
+			// TODO: Make this an enum type
 
             bool hitLeft = puckPos.x < 1;
             bool hitTop = puckPos.y < 1;
             bool hitRight =  SCREEN_WIDTH < (puckPos.x + puckPos.w);
             bool hitBottom =  SCREEN_HEIGHT < (puckPos.y + puckPos.h);
-			bool hitPaddle = puckPos.y > SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT);
+			bool hitPaddle = puckPos.y > SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT); // FIXME
 
             // Collision Detection
             if(hitTop || hitLeft || hitRight || hitBottom || hitPaddle) {
@@ -192,26 +195,24 @@ int main(int argc, char * argv[]) {
                 puckPos.y = oldPos.y;
 
                 if(hitTop) {
-                    puckAngle += M_PI / 2;
-                    SDL_Log("Hit Top Wall");
-                }
+					SDL_Log("[TOP] @ %f", puckAngle);
+					puckAngle = -puckAngle;
+					SDL_Log("[TOP] @ %f", puckAngle);
+				}
                 
 				if (hitLeft) {
-					SDL_Log("Hit Left Wall");
-					double sign = puckAngle < 0 ? -1 : 1;
-					puckAngle += sign * (M_PI / 2);
+					SDL_Log("[LEFT] @ %f", puckAngle);
+					puckAngle += (puckAngle < 0 ? 1 : -1) * (M_PI / 2);
+					SDL_Log("[LEFT] @ %f", puckAngle);
 				}
 
+				// OK ?
                 if(hitRight) {
-					SDL_Log("Hit Right Wall");
-					SDL_Log("%f", puckAngle);
-					// puckAngle = -((M_PI / 2) - puckAngle);
-					double sign = puckAngle < 0 ? -1 : 1;
-					puckAngle += sign * (M_PI / 2);
-					SDL_Log("%f", puckAngle);
+					SDL_Log("[RIGHT]");
+					puckAngle += (puckAngle < 0 ? -1 : 1) * (M_PI / 2);
 				}
                 
-                if(hitBottom || hitPaddle) {
+                if(hitBottom) {
                     // TODO: Enter fail state
                     puckAngle += M_PI / 2;
 					SDL_Log("Hit Bottom");
@@ -219,8 +220,8 @@ int main(int argc, char * argv[]) {
                 
                 if(hitPaddle) {
                     // Where on the paddle did the puck hit?
-                    puckAngle = M_PI * ( puckPos.x + (puckPos.w / 2) - paddlePos.x) / paddlePos.w;
-                    SDL_Log("Hit Paddle");
+					puckAngle = -puckAngle;
+					SDL_Log("Hit Paddle");
                 }
                 
                 if(hitBottom) {
@@ -231,7 +232,7 @@ int main(int argc, char * argv[]) {
                      puckInMotion = false;                    
 
                      puckAngle += M_PI / 2;
-                     paddleVelocity = 20;
+                     // paddleVelocity = 20;
                      paddleInMotion = false;
                 }
 
@@ -246,16 +247,17 @@ int main(int argc, char * argv[]) {
                     if board[i][j] == false collision else next
                  */
                 
-                if(puckPos.y < (WALL_OFFSET + (16 * WALL_HEIGHT)) && puckPos.y > WALL_OFFSET) // 8 brick rows
+                if(puckPos.y < (WALL_OFFSET + (BRICK_HEIGHT * WALL_DEPTH)) && puckPos.y > WALL_OFFSET) // 8 brick rows
                 {
-                    int i = (puckPos.y - WALL_OFFSET) / 16;
-                    int j = (puckPos.x) / 32;
-                    // SDL_Log("puck at %d %d", i, j);
+                    int i = (puckPos.y - WALL_OFFSET) / BRICK_HEIGHT;
+                    int j = (puckPos.x) / BRICK_WIDTH;
                     if(board[i][j] == false) {
-                        SDL_Log("Collision!");
 
-						// FIXME: On what side ??
+						//int by = BRICK_HEIGHT * i + WALL_OFFSET;
+						//int bx = BRICK_WIDTH * j;
 
+                        SDL_Log("[BREAK] %d", i, j);
+						puckAngle = -puckAngle;
                         board[i][j] = true;
                         score++;
                     }
@@ -274,10 +276,10 @@ int main(int argc, char * argv[]) {
         SDL_RenderCopy(renderer, paddleTex, &paddleBounds, &paddlePos);
         
         // FIX THIS:
-        for(int i=0; i<WALL_HEIGHT; i++) {
-            for(int j=0; j<WALL_WIDTH; j++) {
-                brickPos.y = 16*i + WALL_OFFSET;
-                brickPos.x = 32*j;
+        for(int i=0; i<WALL_DEPTH; i++) {
+            for(int j=0; j<WALL_BREADTH; j++) {
+                brickPos.y = BRICK_HEIGHT*i + WALL_OFFSET;
+                brickPos.x = BRICK_WIDTH*j;
                 if(!board[i][j]) {
                     SDL_RenderCopy(renderer, brickTex, &brickBounds, &brickPos);
                 }
