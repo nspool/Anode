@@ -185,7 +185,10 @@ int main(int argc, char * argv[]) {
             bool hitTop = puckPos.y < 1;
             bool hitRight =  SCREEN_WIDTH < (puckPos.x + puckPos.w);
             bool hitBottom =  SCREEN_HEIGHT < (puckPos.y + puckPos.h);
-			bool hitPaddle = puckPos.y > SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT); // FIXME
+			bool hitPaddle = puckPos.y > SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT)
+								&& puckPos.y < SCREEN_HEIGHT - PADDLE_OFFSET
+								&& puckPos.x >= paddlePos.x 
+								&& puckPos.x <= (paddlePos.x + PADDLE_WIDTH);
 
             // Collision Detection
             if(hitTop || hitLeft || hitRight || hitBottom || hitPaddle) {
@@ -256,7 +259,7 @@ int main(int argc, char * argv[]) {
 						//int by = BRICK_HEIGHT * i + WALL_OFFSET;
 						//int bx = BRICK_WIDTH * j;
 
-                        SDL_Log("[BREAK] %d", i, j);
+                        SDL_Log("[BREAK] %d %d", i, j);
 						puckAngle = -puckAngle;
                         board[i][j] = true;
                         score++;
