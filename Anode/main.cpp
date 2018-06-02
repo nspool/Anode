@@ -29,6 +29,31 @@ const int PADDLE_OFFSET = 50;
 const int PUCK_SIZE = 8;
 const double PUCK_INITIAL_ANGLE = -3*M_PI/4; // << -M_PI  ^-2^^  0 >>
 
+typedef enum CollisionType { BOTTOM, TOP, LEFT, RIGHT, PADDLE, NONE };
+
+CollisionType testCollision(SDL_Rect paddlePos, SDL_Rect puckPos)
+{
+	if (puckPos.x < 1) { return LEFT; }
+
+	bool hitTop = puckPos.y < 1;
+	if (hitTop) { return TOP; }
+
+	bool hitRight = SCREEN_WIDTH < (puckPos.x + puckPos.w);
+	if (hitRight) { return RIGHT; }
+
+	bool hitBottom = SCREEN_HEIGHT < (puckPos.y + puckPos.h);
+	if (hitBottom) { return BOTTOM; }
+
+	bool hitPaddle = puckPos.y > SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT)
+		&& puckPos.y < SCREEN_HEIGHT - PADDLE_OFFSET
+		&& puckPos.x >= paddlePos.x
+		&& puckPos.x <= (paddlePos.x + PADDLE_WIDTH);
+
+	if (hitPaddle) { return PADDLE; }
+
+	return NONE;
+}
+
 int main(int argc, char * argv[]) {
 
 	/* -------------- */
@@ -181,53 +206,46 @@ int main(int argc, char * argv[]) {
 
 			// TODO: Make this an enum type
 
-            bool hitLeft = puckPos.x < 1;
-            bool hitTop = puckPos.y < 1;
-            bool hitRight =  SCREEN_WIDTH < (puckPos.x + puckPos.w);
-            bool hitBottom =  SCREEN_HEIGHT < (puckPos.y + puckPos.h);
-			bool hitPaddle = puckPos.y > SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT)
-								&& puckPos.y < SCREEN_HEIGHT - PADDLE_OFFSET
-								&& puckPos.x >= paddlePos.x 
-								&& puckPos.x <= (paddlePos.x + PADDLE_WIDTH);
+			CollisionType t = testCollision(paddlePos, puckPos);
 
             // Collision Detection
-            if(hitTop || hitLeft || hitRight || hitBottom || hitPaddle) {
+            if(t != NONE) {
                 
                 // FIXME: clamp, don't revert
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
 
-                if(hitTop) {
+                if(t == TOP) {
 					SDL_Log("[TOP] @ %f", puckAngle);
 					puckAngle = -puckAngle;
 					SDL_Log("[TOP] @ %f", puckAngle);
 				}
                 
-				if (hitLeft) {
+				if (t == LEFT) {
 					SDL_Log("[LEFT] @ %f", puckAngle);
 					puckAngle += (puckAngle < 0 ? 1 : -1) * (M_PI / 2);
 					SDL_Log("[LEFT] @ %f", puckAngle);
 				}
 
 				// OK ?
-                if(hitRight) {
+                if(t == RIGHT) {
 					SDL_Log("[RIGHT]");
 					puckAngle += (puckAngle < 0 ? -1 : 1) * (M_PI / 2);
 				}
                 
-                if(hitBottom) {
+                if(t == BOTTOM) {
                     // TODO: Enter fail state
                     puckAngle += M_PI / 2;
 					SDL_Log("Hit Bottom");
                 }
                 
-                if(hitPaddle) {
+                if(t == PADDLE) {
                     // Where on the paddle did the puck hit?
 					puckAngle = -puckAngle;
 					SDL_Log("Hit Paddle");
                 }
                 
-                if(hitBottom) {
+                if(t == BOTTOM) {
                     
                      paddlePos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
                      puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58,8,8};
