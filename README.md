@@ -33,4 +33,4 @@ If you are on macOS and have the SDL2 frameworks installed then the path variabl
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
