@@ -27,7 +27,7 @@ On Windows, generate the project file:
 ````
 cd Anode && mkdir build && cd build
 cmake -A x64 -DSDL2_DIR=<PATH_TO_SDL2> -SDL2_IMAGE_DIR=<PATH_TO_SDL2_IMAGE> ..
-```
+````
 
 If you are on macOS and have the SDL2 frameworks installed then the path variables can be omitted.
 
