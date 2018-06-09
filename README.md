@@ -1,31 +1,36 @@
 # Anode
 
-The beginnings of an Arkanoid clone. Written in C++ with SDL2. Use CMake to generate a project file for the development environment of your choice.
+The beginnings of an Arkanoid clone.
+Written in C++ with SDL2.
+Use CMake to generate a project file for the development environment of your choice.
 
-# TODO
+![Screenshot](Anode.png?raw=true "Screenshot showing Anode, an incomplete Arkanoid clone")
+
+## TODO
 
 - Fix fauly collision detection. Current collision only occurs if top-left of puck collides with a brick.
 - Add game start and finish screens
 - Display score
 - Add sound
 
+### Getting Started
 
-# BUILDNIG
+Anode uses CMake
 
-Unpack the SDL2 development files and set the SDL2_DIR environment variable to point at the directory location in the same way as the previous example. Also make sure that SDL2.dll is in a folder your path. Either 32-bit or 64-bit versions appear to work fine.
+### Prerequisites
+Unpack the SDL2 and SDL2_Image development files and add their respective DLLs to your path.
 
-As of Visual Studio 2017 it isn't necessary to explicitly generate a solution with CMake. Instead, opening the RoboNeko folder in Visual Studio 2017 will automatically create a project based on the CMake settings and allow you to build and debug from the IDE.
+### Building
 
-Alternatively using CMake from the command line to create a 32-bit solution:
- 
-    cd anode 
-    mkdir build
-    cd build
-    cmake ..
-	 
-or 64-bit solution:
+On Windows, generate the project file:
 
-    cd anode
-    mkdir build
-    cd build
-    cmake -A x64 ..
+````
+cd Anode && mkdir build && cd build
+cmake -A x64 -DSDL2_DIR=<PATH_TO_SDL2> -SDL2_IMAGE_DIR=<PATH_TO_SDL2_IMAGE> ..
+```
+
+If you are on macOS and have the SDL2 frameworks installed then the path variables can be omitted.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
