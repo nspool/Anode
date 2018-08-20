@@ -31,5 +31,8 @@
 # Backups
 *~
 
+# Visual Studio
+.vs/
+
 # Default CMake Build Dir
 build/
