@@ -42,6 +42,18 @@
 # (To distribute this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
+SET(SDL2_IMAGE_SEARCH_PATHS
+	~/Library/Frameworks
+	/Library/Frameworks
+	/usr/local
+	/usr
+	/sw # Fink
+	/opt/local # DarwinPorts
+	/opt/csw # Blastwave
+	/opt
+)
+
+
 find_path(SDL2_IMAGE_INCLUDE_DIR SDL_image.h
         HINTS
         ${SDL2_IMAGE_DIR}
@@ -49,7 +61,7 @@ find_path(SDL2_IMAGE_INCLUDE_DIR SDL_image.h
         PATH_SUFFIXES SDL2
         # path suffixes to search inside ENV{SDLDIR}
         include/SDL2 include
-        PATHS ${SDL2_IMAGE_PATH}
+        PATHS ${SDL2_IMAGE_SEARCH_PATHS}
         )
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
