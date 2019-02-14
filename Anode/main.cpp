@@ -6,6 +6,8 @@
 //  Copyright © 2017 nspool. All rights reserved.
 //
 
+#include <iostream>
+
 #include <stdlib.h>
 
 #include <SDL.h>
@@ -29,60 +31,69 @@ const int PADDLE_OFFSET = 50;
 const int PUCK_SIZE = 8;
 const double PUCK_INITIAL_ANGLE = -3*M_PI/4; // << -M_PI  ^-2^^  0 >>
 
-typedef enum CollisionType { BOTTOM, TOP, LEFT, RIGHT, PADDLE, NONE };
+typedef enum { BOTTOM, TOP, LEFT, RIGHT, PADDLE, NONE } CollisionType;
 
 CollisionType testCollision(SDL_Rect paddlePos, SDL_Rect puckPos)
 {
-	if (puckPos.x < 1) { return LEFT; }
-
-	bool hitTop = puckPos.y < 1;
-	if (hitTop) { return TOP; }
-
-	bool hitRight = SCREEN_WIDTH < (puckPos.x + puckPos.w);
-	if (hitRight) { return RIGHT; }
-
-	bool hitBottom = SCREEN_HEIGHT < (puckPos.y + puckPos.h);
-	if (hitBottom) { return BOTTOM; }
-
-	bool hitPaddle = puckPos.y > SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT)
-		&& puckPos.y < SCREEN_HEIGHT - PADDLE_OFFSET
-		&& puckPos.x >= paddlePos.x
-		&& puckPos.x <= (paddlePos.x + PADDLE_WIDTH);
-
-	if (hitPaddle) { return PADDLE; }
-
-	return NONE;
+    if (puckPos.x < 1) { return LEFT; }
+    
+    bool hitTop = puckPos.y < 1;
+    if (hitTop) { return TOP; }
+    
+    bool hitRight = SCREEN_WIDTH < (puckPos.x + puckPos.w);
+    if (hitRight) { return RIGHT; }
+    
+    bool hitBottom = SCREEN_HEIGHT < (puckPos.y + puckPos.h);
+    if (hitBottom) { return BOTTOM; }
+    
+    bool hitPaddle = puckPos.y > SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT)
+    && puckPos.y < SCREEN_HEIGHT - PADDLE_OFFSET
+    && puckPos.x >= paddlePos.x
+    && puckPos.x <= (paddlePos.x + PADDLE_WIDTH);
+    
+    if (hitPaddle) { return PADDLE; }
+    
+    return NONE;
 }
 
 int main(int argc, char * argv[]) {
-
-	/* -------------- */
+    
+    /* -------------- */
     /* INITIALISATION */
     /* -------------- */
     
-	// State of the board
+    // State of the board
     bool board[WALL_DEPTH][WALL_BREADTH];
     for(int i=0; i<WALL_DEPTH; i++) {
         for(int j=0; j<WALL_BREADTH; j++) {
             board[i][j] = false;
         }
     }
-        
+    
     // TODO: simplify SDL boilerplate
     
     SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_Window* window  = nullptr;
+    SDL_Renderer* renderer = nullptr;
     
-    if(SDL_Init(SDL_INIT_EVERYTHING) < 0 || IMG_Init( IMG_INIT_PNG | IMG_INIT_JPG) < 0) {
-        SDL_LogError(0, "Failed to Initialize SDL!");
-        return 1;
+    try
+    {
+        if((SDL_Init(SDL_INIT_EVERYTHING) < 0) ||
+           IMG_Init( IMG_INIT_PNG | IMG_INIT_JPG) < 0) {
+            throw;
+        }
+        
+        window = SDL_CreateWindow("Anode", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        
+        if(window == 0 || renderer == 0) {
+            SDL_LogError(0, "%s", SDL_GetError());
+            throw;
+        }
     }
-    
-    SDL_Window* window = SDL_CreateWindow("Anode", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    
-    if(window == 0 || renderer == 0) {
-        SDL_LogError(0, "%s", SDL_GetError());
-        return 1;
+    catch(...)
+    {
+        std::cerr << "Failed to Initialize SDL!\n";
     }
     
     SDL_SetWindowTitle(window, "Anode");
@@ -100,39 +111,39 @@ int main(int argc, char * argv[]) {
     SDL_Surface* puck = IMG_Load("puck.png");
     SDL_Texture* puckTex = SDL_CreateTextureFromSurface(renderer, puck);
     SDL_Rect puckBounds = {0,0,PUCK_SIZE,PUCK_SIZE };
-        
+    
     SDL_Surface* brick = IMG_Load("brick.png");
     SDL_Texture* brickTex = SDL_CreateTextureFromSurface(renderer, brick);
     SDL_Rect brickBounds = {0,0,BRICK_WIDTH,BRICK_HEIGHT};
     SDL_Rect brickPos = {0,0,BRICK_WIDTH,BRICK_HEIGHT };
     
     // Game State
-
-	int score = 0;
-
+    
+    int score = 0;
+    
     bool inProgress = true;
     
     SDL_Rect paddlePos = {SCREEN_WIDTH / 2 - PADDLE_WIDTH / 2, SCREEN_HEIGHT - PADDLE_OFFSET, paddleBounds.w, paddleBounds.h};
     SDL_Rect puckPos = {SCREEN_WIDTH / 2 - PADDLE_WIDTH / 4, SCREEN_HEIGHT - (PADDLE_OFFSET + PADDLE_HEIGHT), puckBounds.w, puckBounds.h};
     
     bool puckInMotion = false;
-	bool paddleInMotion = false;
-
+    bool paddleInMotion = false;
+    
     int paddleVelocity = 10;
-	int puckVelocity = 2;
-
-	double puckAngle = PUCK_INITIAL_ANGLE;
-
-	/* ----------------*/
-	/* MAIN EVENT LOOP */
-	/* ----------------*/
-
+    int puckVelocity = 2;
+    
+    double puckAngle = PUCK_INITIAL_ANGLE;
+    
+    /* ----------------*/
+    /* MAIN EVENT LOOP */
+    /* ----------------*/
+    
     SDL_Log("Starting event loop ...");
     
     while(inProgress) {
-
+        
         SDL_Delay(1);
-
+        
         // TODO: Use an SDL_WaitEvent when waiting for space to start game
         if(SDL_PollEvent(&e) != 0)
         {
@@ -153,7 +164,7 @@ int main(int argc, char * argv[]) {
                 }
             }
         }
-                
+        
         bool scanLeft = keystates[SDL_SCANCODE_LEFT];
         bool scanRight = keystates[SDL_SCANCODE_RIGHT];
         bool scanSpace = keystates[SDL_SCANCODE_SPACE];
@@ -186,86 +197,85 @@ int main(int argc, char * argv[]) {
             paddlePos.x += paddleVelocity;
             if((paddlePos.x + paddlePos.w) > SCREEN_WIDTH) {
                 paddlePos.x = SCREEN_WIDTH - paddlePos.w;
-            } else {
-                //if(!puckInMotion) {
-                //    paddleInMotion = true;
-                //    puckAngle = M_PI - 0.1;
-                //}
             }
         }
-
+        
         if(puckInMotion) {
+            
+            // FIXME: it shouldn't revert to the previous position,
+            // but calculate the correct spot where the path of the puck
+            // intersects with the object
             
             SDL_Point oldPos = {puckPos.x, puckPos.y};
             
-			puckPos.y += (int)(puckVelocity * sin(puckAngle));
+            puckPos.y += (int)(puckVelocity * sin(puckAngle));
             puckPos.x += (int)(puckVelocity * cos(puckAngle));
-
-			if (puckPos.y < 0) { puckPos.y = 0; }
-			if (puckPos.x < 0) { puckPos.x = 0; }
-
-			// TODO: Make this an enum type
-
-			CollisionType t = testCollision(paddlePos, puckPos);
-
+            
+            if (puckPos.y < 0) { puckPos.y = 0; }
+            if (puckPos.x < 0) { puckPos.x = 0; }
+            
+            // TODO: Make this an enum type
+            
+            CollisionType t = testCollision(paddlePos, puckPos);
+            
             // Collision Detection
             if(t != NONE) {
                 
                 // FIXME: clamp, don't revert
                 puckPos.x = oldPos.x;
                 puckPos.y = oldPos.y;
-
-                if(t == TOP) {
-					SDL_Log("[TOP] @ %f", puckAngle);
-					puckAngle = -puckAngle;
-					SDL_Log("[TOP] @ %f", puckAngle);
-				}
                 
-				if (t == LEFT) {
-					SDL_Log("[LEFT] @ %f", puckAngle);
-					puckAngle += (puckAngle < 0 ? 1 : -1) * (M_PI / 2);
-					SDL_Log("[LEFT] @ %f", puckAngle);
-				}
-
-				// OK ?
+                if(t == TOP) {
+                    SDL_Log("[TOP] @ %f", puckAngle);
+                    puckAngle = -puckAngle;
+                    SDL_Log("[TOP] @ %f", puckAngle);
+                }
+                
+                if (t == LEFT) {
+                    SDL_Log("[LEFT] @ %f", puckAngle);
+                    puckAngle += (puckAngle < 0 ? 1 : -1) * (M_PI / 2);
+                    SDL_Log("[LEFT] @ %f", puckAngle);
+                }
+                
+                // OK ?
                 if(t == RIGHT) {
-					SDL_Log("[RIGHT]");
-					puckAngle += (puckAngle < 0 ? -1 : 1) * (M_PI / 2);
-				}
+                    SDL_Log("[RIGHT]");
+                    puckAngle += (puckAngle < 0 ? -1 : 1) * (M_PI / 2);
+                }
                 
                 if(t == BOTTOM) {
                     // TODO: Enter fail state
                     puckAngle += M_PI / 2;
-					SDL_Log("Hit Bottom");
+                    SDL_Log("Hit Bottom");
                 }
                 
                 if(t == PADDLE) {
                     // Where on the paddle did the puck hit?
-					puckAngle = -puckAngle;
-					SDL_Log("Hit Paddle");
+                    puckAngle = -puckAngle;
+                    SDL_Log("Hit Paddle");
                 }
                 
                 if(t == BOTTOM) {
                     
-                     paddlePos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
-                     puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58,8,8};
+                    paddlePos = {SCREEN_WIDTH / 2 - 32,SCREEN_HEIGHT - 50,64,8};
+                    puckPos = {SCREEN_WIDTH / 2 - 16,SCREEN_HEIGHT - 58,8,8};
                     
-                     puckInMotion = false;                    
-
-                     puckAngle += M_PI / 2;
-                     // paddleVelocity = 20;
-                     paddleInMotion = false;
+                    puckInMotion = false;                    
+                    
+                    puckAngle += M_PI / 2;
+                    // paddleVelocity = 20;
+                    paddleInMotion = false;
                 }
-
+                
                 // Apply jitter to exaggerate the angle
-				// double jitter = 0; // (rand() / (double)RAND_MAX) / 4.0;
+                // double jitter = 0; // (rand() / (double)RAND_MAX) / 4.0;
                 // puckAngle += (puckSign  * jitter);
-
+                
             } else {
                 
                 /* if within area of puck
-                    which board coords for current puck position?
-                    if board[i][j] == false collision else next
+                 which board coords for current puck position?
+                 if board[i][j] == false collision else next
                  */
                 
                 if(puckPos.y < (WALL_OFFSET + (BRICK_HEIGHT * WALL_DEPTH)) && puckPos.y > WALL_OFFSET) // 8 brick rows
@@ -273,12 +283,12 @@ int main(int argc, char * argv[]) {
                     int i = (puckPos.y - WALL_OFFSET) / BRICK_HEIGHT;
                     int j = (puckPos.x) / BRICK_WIDTH;
                     if(board[i][j] == false) {
-
-						//int by = BRICK_HEIGHT * i + WALL_OFFSET;
-						//int bx = BRICK_WIDTH * j;
-
+                        
+                        //int by = BRICK_HEIGHT * i + WALL_OFFSET;
+                        //int bx = BRICK_WIDTH * j;
+                        
                         SDL_Log("[BREAK] %d %d", i, j);
-						puckAngle = -puckAngle;
+                        puckAngle = -puckAngle;
                         board[i][j] = true;
                         score++;
                     }
@@ -306,10 +316,10 @@ int main(int argc, char * argv[]) {
                 }
             }
         }
-
+        
         SDL_RenderPresent(renderer);
     }
-
+    
     SDL_DestroyWindow(window);
     SDL_Quit();
     
